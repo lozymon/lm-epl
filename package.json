@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/lozymon/lm-epl/issues"
   },
-  "homepage": "https://github.com/lozymon/lm-epl#readme"
+  "homepage": "https://github.com/lozymon/lm-epl#readme",
+  "dependencies": {
+    "write-file-queue": "^0.0.1"
+  }
 }
