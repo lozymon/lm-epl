@@ -92,28 +92,28 @@ function EPL(options) {
      * - Bar Code
      * - RSS-14 Bar Code
      *
-     * @param p1 Horizontal start position
-     * @param p2 Vertical start position
-     * @param p3 Rotation
+     * @param x Horizontal start position
+     * @param y Vertical start position
+     * @param rotation Rotation
      *           Accepted Values:
      *           0 = normal (no rotation)
      *           1 = 90 degrees
      *           2 = 180 degrees
      *           3 = 270 degrees
-     * @param p4 Bar Code selection
-     * @param p5 Narrow bar width
-     * @param p6 Wide bar width
+     * @param barCode Bar Code selection
+     * @param narrowBar Narrow bar width
+     * @param wideBar Wide bar width
      *           Accepted Values: 2 - 30
-     * @param p7 Bar code height
-     * @param p8 Print human readable code
+     * @param barCodeHeight Bar code height
+     * @param printHumanReadableCode Print human readable code
      *           Accepted Values:
      *           B = yes
      *           N = no
      * @param data Fixed data field
      * @returns {EPL}
      */
-    self.B = function (p1, p2, p3, p4, p5, p6, p7, p8, data) {
-        command('B', p1, p2, p3, p4, p5, p6, p7, p8, data);
+    self.BarCode = self.B = function (x, y, rotation, barCode, narrowBar, wideBar, barCodeHeight, printHumanReadableCode, data) {
+        command('B', x, y, rotation, barCode, narrowBar, wideBar, barCodeHeight, printHumanReadableCode, `"${data}"`);
         return self;
     };
 
@@ -163,12 +163,12 @@ function EPL(options) {
      * the amount of heat produced by the print head, More heat will produce a darker image. Too
      * much heat can cause the printed image to distort.
      *
-     * @param p1 Density setting Accepted Value 0 - 15
+     * @param density setting Accepted Value 0 - 15
      * @returns {EPL}
      * @constructor
      */
-    self.Density = self.D = function (p1) {
-        command('D', p1);
+    self.Density = self.D = function (density) {
+        command('D', density);
         return self;
     };
 
@@ -559,15 +559,15 @@ function EPL(options) {
     /**
      * Use this command to draw black lines, overwriting previous information.
      *
-     * @param p1 Horizontal start position (X) in dots.
-     * @param p2 Vertical start position (Y) in dots.
-     * @param p3 Horizontal length in dots.
-     * @param p4 Vertical length in dots.
+     * @param x Horizontal start position (X) in dots.
+     * @param y Vertical start position (Y) in dots.
+     * @param horizontalLength Horizontal length in dots.
+     * @param verticalLength Vertical length in dots.
      * @returns {EPL}
      * @constructor
      */
-    self.LineDrawBlack = self.LO = function (p1, p2, p3, p4) {
-        command('LO', p1, p2, p3, p4);
+    self.LineDrawBlack = self.LO = function (x, y, horizontalLength, verticalLength) {
+        command('LO', x, y, horizontalLength, verticalLength);
         return self;
     };
 
@@ -802,16 +802,16 @@ function EPL(options) {
      * Note • The P command cannot be used inside of a stored form sequence. For automatic
      *        printing of stored forms, use the PA command.
      *
-     * @param p1 Number of label sets Accepted Values: 1 to 65535
-     * @param p2 Number of copies of each labael
+     * @param numberOfLabel Number of label sets Accepted Values: 1 to 65535
+     * @param numberOfCopies Number of copies of each labael
      *           Accepted Values: 1 to 65535
      *           Number of copies of each label (used in combination with
      *           counters to print multiple copies of the same label).
      * @returns {EPL}
      * @constructor
      */
-    self.Print = self.P = function (p1, p2) {
-        command('P', p1, p2);
+    self.Print = self.P = function (numberOfLabel, numberOfCopies) {
+        command('P', numberOfLabel, numberOfCopies);
         return self;
     };
 
