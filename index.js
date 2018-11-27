@@ -1,6 +1,32 @@
-function EPL() {
+const writeFileQueue = require('write-file-queue');
+const writeQueue = {};
+
+function EPL(options) {
     const self = this;
     this.output = '';
+
+    self.options = {
+        device: '',
+    };
+
+    for (let key in (options || {})) {
+        if (options.hasOwnProperty(key)) {
+            self.options[key] = options[key];
+        }
+    }
+
+    /**
+     * send data to given device
+     *
+     * @param callback
+     * @returns {EPL}
+     */
+    self.sendToPrinter = function (callback) {
+        const device = self.options.device;
+        writeQueue[device] = writeQueue[device] || writeFileQueue({ retries: 300000 });
+        writeQueue[device](device, self.output, callback);
+        return self;
+    };
 
     /**
      *
@@ -25,9 +51,9 @@ function EPL() {
      * character maps. The Asian characters are double-byte mapped characters. The printed Asian
      * character is dependent on the double-byte ASCII values.
      *
-     * @param p1 Horizontal start position (X) in dots.
-     * @param p2 Vertical start position (Y) in dots.
-     * @param p3 Rotation
+     * @param x Horizontal start position (X) in dots.
+     * @param y Vertical start position (Y) in dots.
+     * @param rotation
      *           Characters are organized vertically from left to right and then rotated to print.
      *
      *           Accepted Values:
@@ -46,15 +72,17 @@ function EPL() {
      *           5 = 90 degrees
      *           6 = 180 degrees
      *           7 = 270 degrees
-     * @param p4 Font selection
-     * @param p5 Horizontal multiplier
-     * @param p6 Vertical multiplier
-     * @param p7 Reverse image
+     * @param font Font selection
+     * @param horizontalMultiplier Horizontal multiplier
+     * @param verticalMultiplier Vertical multiplier
+     * @param reverseImage Reverse image
      * @param data Fixed data field
      * @constructor
      */
-    self.Text = self.A = function (p1, p2, p3, p4, p5, p6, p7, data) {
-        command('A', p1, p2, p3, p4, p5, p6, p7, `"${data}"`);
+    self.Text = self.A = function (x, y, rotation, font, horizontalMultiplier, verticalMultiplier, reverseImage, data) {
+        data = data || '';
+        data = data.replace("\\", "\\\\").replace("\"", "\\\"");
+        command('A', x, y, rotation, font, horizontalMultiplier, verticalMultiplier, reverseImage, `"${data}"`);
         return self;
     };
 
