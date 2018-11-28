@@ -23,7 +23,7 @@ function EPL(options) {
      */
     self.sendToPrinter = function (callback) {
         const device = self.options.device;
-        writeQueue[device] = writeQueue[device] || writeFileQueue({ retries: 300000 });
+        writeQueue[device] = writeQueue[device] || writeFileQueue({retries: 300000});
         writeQueue[device](device, self.output, callback);
         return self;
     };
@@ -856,6 +856,140 @@ function EPL(options) {
      */
     self.SetLabelWidth = self.q = function (width) {
         commanf('q', width);
+        return self;
+    }
+
+    /**
+     * Use this command to set the form and gap length or black line thickness when
+     * using the transmissive (gap) sensor, black line sensor, or for setting the printer into the
+     * continuous media print mode.
+     *
+     * The Q command will cause the printer to recalculate and reformat image buffer.
+     *
+     * @param lableLength Default Value: Set by the AutoSense of media
+     *                    Accepted Values: 0-65535
+     *                     • Distance between edges of the label or black line marks.
+     *                     • For continuous mode, the p1 parameter sets the feed
+     *                    distance between the end of one form and beginning of the
+     *                    next.
+     * @param gapLength Accepted Values:
+     *                     16-240 (dots) for 203 dpi printers
+     *                     18-240 (dots) for 300dpi printers
+     *
+     *                  Gap Mode:
+     *                  By default, the printer is in Gap mode and parameters are set
+     *                  with the media AutoSense.
+     *
+     *                  Black Line Mode:
+     *                  Set p2 to B plus black line thickness in dots. See the Gap
+     *                  mode range.
+     *
+     *                  Continuous Media Mode:
+     *                  Set p2 to 0 (zero)The transmissive (gap) sensor will beused to
+     *                  detect the end of media.
+     * @param offsetLength Required for black line mode operation.
+     *                     Optional for Gap detect or continuous media modes. Use only
+     *                     positive offset values.
+     * @returns {EPL}
+     */
+    self.SetFormLength = self.Q = function (lableLength, gapLength, offsetLength) {
+        commanf('Q', lableLength, gapLength, offsetLength);
+        return self;
+    }
+
+    /**
+     * Use this command to disable or reenable the double buffer image (label)
+     * printing. The double buffer feature is a automatically tested and set by the q and Q commands.
+     *
+     * Mobile printers, such as the TR 220, ignore this command and automatically set the printer to
+     * single buffer mode.
+     *
+     * @param mode Accepted Values:
+     *              N = Disable double buffer mode
+     *              Y = Re-enable the double buffer mode if the printer
+     *                  memory supports the image buffer size set by Q and q
+     *                  parameters
+     * @returns {EPL}
+     */
+    self.SetDoubleBufferMode = self.r = function (mode) {
+        commanf('r', mode);
+        return self;
+    }
+
+    /**
+     * Use this command to move the reference point for the X and Y axes. All
+     * horizontal and vertical measurements in other commands use the setting for R as the origin for
+     * measurements. Use the R command as an alternative to sending the q command to position
+     * (center) labels that are narrower than the print head.
+     *
+     * The R command interacts with image buffer setting, as follows:
+     *  • The R command forces the printer to use the full width of the print head as the width of the
+     *    image buffer. The R command overrides the q commands print width setting.
+     *  • Rotate the image buffer with the Z command to establish top and left margins (ZT) or the
+     *    bottom and right margins (ZB).
+     *  • When positioned correctly, prevents printing off two (2) edges of the label opposite the 0,0
+     *    reference point
+     *
+     * @param horizontalLeftMargin Horizontal (left) margin measured in dots.
+     * @param verticalTopMargin Vertical (top) margin measured in dots.
+     * @returns {EPL}
+     */
+    self.SetReferencePoint = self.R = function (horizontalLeftMargin, verticalTopMargin) {
+        commanf('R', horizontalLeftMargin, verticalTopMargin);
+        return self;
+    }
+
+    /**
+     * Use this command to select the print speed.
+     *
+     * Mobile printers, such as the TR 220, ignore this command and automatically set speed to
+     * optimize battery use.
+     *
+     * @param speed
+     * @returns {EPL}
+     */
+    self.SpeedSelect = self.S = function (speed) {
+        commanf('S', speed);
+        return self;
+    }
+
+    /**
+     * Use this command to define the date format and print date data. The TD
+     * variable is inserted within a Text or Bar Code command's DATA parameter to print the date.
+     * The TD variable supports offsetting day by up to 253 days (see examples below for usage).
+     *
+     * This command only works in printers equipped with the Real Time Clock time and date
+     * option.
+     *
+     * Power-Up Default Format - mn-dd-y4
+     *
+     * @param p1
+     * @param p2
+     * @param p3
+     */
+    self.DateRecallFormatLayout = self.TD = function (p1, p2, p3) {
+        commanf('TD', p1, p2, p3);
+        return self;
+    }
+
+    /**
+     * Use this command to set the time and date in printers equipped with the Real
+     * Time Clock option.
+     * 
+     * @param month Accepted Values: 01–12
+     * @param day Accepted Values: 01–31
+     * @param year Value is equivalent to the last two digits of Year (e.g. 95)
+     *             Accepted Values:
+     *             90-99 (to indicate 1990-1999)
+     *             00-89 (to indicate 2000-2089)
+     * @param hour Shown in 24 hour format.
+     *             Accepted Values: 00–23
+     * @param minutes Accepted Values: 00–59
+     * @param seconds Accepted Values: 00–59
+     * @returns {EPL}
+     */
+    self.SetRealTimeClock = self.TS = function (month, day, year, hour, minutes, seconds) {
+        commanf('TS', month, day, year, hour, minutes, seconds);
         return self;
     }
 
