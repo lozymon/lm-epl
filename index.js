@@ -975,7 +975,7 @@ function EPL(options) {
     /**
      * Use this command to set the time and date in printers equipped with the Real
      * Time Clock option.
-     * 
+     *
      * @param month Accepted Values: 01–12
      * @param day Accepted Values: 01–31
      * @param year Value is equivalent to the last two digits of Year (e.g. 95)
@@ -990,6 +990,121 @@ function EPL(options) {
      */
     self.SetRealTimeClock = self.TS = function (month, day, year, hour, minutes, seconds) {
         commanf('TS', month, day, year, hour, minutes, seconds);
+        return self;
+    }
+
+    /**
+     * Use this command to define the time format and print time data. The TT
+     * variable is inserted within a Text or Bar Code command's DATA parameter to print the time.
+     *
+     * This command works only in printers equipped with the Real Time Clock (RTC) time and date
+     * option.
+     *
+     * @param hour  Hours displayed as 2 digits (e.g. 01)
+     * @param minutes Minutes displayed as 2 digits (e.g. 15)
+     * @param seconds  Seconds displayed as 2 digits (e.g. 00)
+     * @returns {EPL}
+     */
+    self.TimeRecallFormatLayout = self.TT = function (hour, minutes, seconds) {
+        commanf('TT', hour, minutes, seconds);
+        return self;
+    }
+
+    /**
+     * Use this command to print the current printer configuration for page mode
+     * printing. The printout is the same the Dump Mode printout initiated by the printer’s AutoSense
+     * routine. The printer does not enter Dump Mode. See Explanation of the Status Printout
+     * on page 34 for a description of this printout.
+     *
+     * @returns {EPL}
+     */
+    self.PrintConfigurationGeneral = self.U = function () {
+        commanf('U');
+        return self;
+    }
+
+    /**
+     * This command sets the printer to clear (empty) the print buffer if a media out
+     * condition is detected.
+     *
+     * A power cycle, reset, or UB command will clear this setting.
+     *
+     * Normal (default) operation for the printer is to resume printing if the empty roll is replaced
+     * with new roll (or ribbon) and finish print any labels in the process of printing prior to a media
+     * out condition, including batch print jobs.
+     *
+     * @returns {EPL}
+     */
+    self.EnableClearLabelCounterMode = self.UA = function () {
+        commanf('UA');
+        return self;
+    }
+
+    /**
+     * Use this command to clear the UA command and restore the default setting to
+     * allow the printer to resume printing a batch job if a paper empty occurs. The page mode
+     * (EPL2) printer, by default, will resume printing if the empty roll is replaced with new roll (or
+     * ribbon) and finish a batch print job.
+     *
+     * @returns {EPL}
+     */
+    self.ResetLabelCounterMode = self.UB = function () {
+        commanf('UB');
+        return self;
+    }
+
+    /**
+     * This command will cause the printer to send information about external fonts
+     * currently stored in the printer back to the host.
+     * The printer will send the number of external fonts stored and each font’s name, height and
+     * direction, to the host through the RS-232 port.
+     *
+     * @returns {EPL}
+     */
+    self.ExternalFontInformationInquiry = self.UE = function () {
+        commanf('UE');
+        return self;
+    }
+
+    /**
+     * This command will cause the printer to send information about forms currently
+     * stored in the printer back to the host.
+     *
+     * @returns {EPL}
+     */
+    self.ExternalFontInformationInquiry = self.UF = function () {
+        commanf('UF');
+        return self;
+    }
+
+    /**
+     * This command will cause the printer to send information about graphics
+     * currently stored in the printer back to the host.
+     *
+     * @returns {EPL}
+     */
+    self.GraphicsInformationInquiry = self.UG = function () {
+        commanf('UG');
+        return self;
+    }
+
+    /**
+     * This command will cause the printer to enable prompts to be sent to the host
+     * and it will send the currently selected codepage to the host through the RS-232 port.
+     *
+     * This command also disables software flow control (XON/XOFF). Hardware flow control is
+     * not disabled (DTR/CTS). To restart software flow control a reset (^@ command) or power
+     * must be recycled.
+     *
+     * See also the I and U commands.
+     *
+     * @param numberOfDataBits
+     * @param codePage
+     * @param countryCode
+     * @returns {EPL}
+     */
+    self.HostPromptsCodepageInquiry = self.UI = function (numberOfDataBits, codePage, countryCode) {
+        commanf('UI', numberOfDataBits, codePage, countryCode);
         return self;
     }
 
