@@ -77,7 +77,6 @@ function EPL(options) {
      * @param verticalMultiplier Vertical multiplier
      * @param reverseImage Reverse image
      * @param data Fixed data field
-     * @constructor
      */
     self.Text = self.A = function (x, y, rotation, font, horizontalMultiplier, verticalMultiplier, reverseImage, data) {
         data = data || '';
@@ -138,7 +137,7 @@ function EPL(options) {
      * @param data
      * @returns {EPL}
      */
-    self.b = function (p1, p2, p3, p4, p5, p6, p7, p8, data) {
+    self.BarCode2D = self.b = function (p1, p2, p3, p4, p5, p6, p7, p8, data) {
         command('b', p1, p2, p3, p4, p5, p6, p7, p8, data);
         return self;
     };
@@ -151,9 +150,8 @@ function EPL(options) {
      * @param p4 Steo Value
      * @param prompt KDU Propt Options
      * @returns {EPL}
-     * @constructor
      */
-    self.C = function (p1, p2, p3, p4, prompt) {
+    self.Counter = self.C = function (p1, p2, p3, p4, prompt) {
         command('C', p1, p2, p3, p4, prompt);
         return self;
     };
@@ -165,7 +163,6 @@ function EPL(options) {
      *
      * @param density setting Accepted Value 0 - 15
      * @returns {EPL}
-     * @constructor
      */
     self.Density = self.D = function (density) {
         command('D', density);
@@ -186,7 +183,7 @@ function EPL(options) {
      *
      * @returns {EPL}
      */
-    self.dump = function () {
+    self.Dump = function () {
         command('dump');
         return self;
     };
@@ -195,9 +192,8 @@ function EPL(options) {
      * This command will cause the printer to print a list of all soft fonts that are stored in memory
      *
      * @returns {EPL}
-     * @constructor
      */
-    self.EI = function () {
+    self.PrintSoftFontInformation = self.EI = function () {
         command('EI');
         return self;
     };
@@ -207,9 +203,8 @@ function EPL(options) {
      *
      * @param fontname
      * @returns {EPL}
-     * @constructor
      */
-    self.EK = function (fontname = '*') {
+    soft.DeleteSoftFont = self.EK = function (fontname = '*') {
         command('EK', `"${fontname}"`);
         return self;
     };
@@ -218,19 +213,44 @@ function EPL(options) {
      * This command allows the advanced programmer to specify the printer's
      * error/status report character for error reporting via the RS-232 serial interface
      *
-     * @param p1 Any single ASCII character Accepted Values: 0255 decimal (00-FF hexadecimal)
-     * @param p2 Error/Status Response Mode
+     * @param character Any single ASCII character Accepted Values: 0255 decimal (00-FF hexadecimal)
+     * @param error Error/Status Response Mode
      * @returns {EPL}
      */
-    self.eR = function (p1, p2) {
-        command('eR', p1, p2);
+    self.UserDefinedError = self.eR = function (character, error) {
+        command('eR', character, error);
         return self;
     };
 
-    // self.ES = function (fontname, p1, p2, p3, p4, p5, p6, p7, p8, data) {
-    //     command('ES', p1, p2, p3, p4, p5, p6, p7, p8, data);
-    //     return self;
-    // };
+    /**
+     * This command is used to download and store soft fonts in memory.
+     *
+     * @param fontname One lette
+     *                 Accepted Values: a–z, lower case
+     *                 Lower Case named fonts minimize soft font memory usage to
+     *                 only store fonts downloaded and have 256 character limit.
+     * @param numberOfCharacters Accepted Values: 00–FF hex (0–255 decimal) for 1 to 256
+     *                           fonts per soft font set.
+     * @param rotation Accepted Values:
+     *                 00 hex = 0 and 180 degrees
+     *                 01 hex = 90 and 270 degrees
+     *                 02 hex = Both 0 and 180 degree rotation pair and the
+     *                 90 and 270 degree rotation pair
+     * @param fontHeight Accepted Values: 00–FF hex
+     *                   Measured in dots and expressed as a hexadecimal number, i.e.
+     *                   1B hex. = 27 dots.
+     *                   Font height includes accentors and dissenters of characters
+     *                   and need to fit in the character cell.
+     *                    • 203 dpi printers = 256 dots = 1.26 in. = 32.03 mm
+     *                    • 300 dpi printers = 00–FF hex.
+     *                      256 dots = 0.85 in. = 21.67 mm
+     * @param args
+     * @returns {EPL}
+     */
+    self.StoreSoftFont = self.ES = function (fontname, numberOfCharacters, rotation, fontHeight, ...args) {
+        command('ES', numberOfCharacters, rotation, FontHeight, ...args);
+        return self;
+    };
 
     /**
      * Use this command on an individual printer to provide precision cut placement to:
@@ -244,13 +264,13 @@ function EPL(options) {
      *  differences, the printer may not accurately position the labels before cutting, causing the cutter
      *  to cut the label instead of the liner.
      *
-     * @param p1 Cut position index measured in dots.
-     *           Accepted Values: 070 to 130
-     *           Accepted Values: 100.
+     * @param cutPositionIndex Cut position index measured in dots.
+     *                         Accepted Values: 070 to 130
+     *                         Accepted Values: 100.
      * @returns {EPL}
      */
-    self.f = function (p1) {
-        command('f', p1);
+    self.CutPosition = self.f = function (cutPositionIndex) {
+        command('f', cutPositionIndex);
         return self;
     };
 
@@ -260,13 +280,13 @@ function EPL(options) {
      *
      * Mobile printers, such as the TR 220, ignore this command.
      *
-     * @param p1 Media position offset measured in dots.
-     *           Accepted Values: 0–255
-     *           Default Value: 0
+     * @param mediaPositionOffset Media position offset measured in dots.
+     *                            Accepted Values: 0–255
+     *                            Default Value: 0
      * @returns {EPL}
      */
-    self.fB = function (p1) {
-        command('fB', p1);
+    self.AdjustBackupPosition = self.fB = function (mediaPositionOffset) {
+        command('fB', mediaPositionOffset);
         return self;
     };
 
@@ -274,9 +294,8 @@ function EPL(options) {
      * This command is used to end a form store sequence.
      *
      * @returns {EPL}
-     * @constructor
      */
-    self.FE = function () {
+    self.EndFormStore = self.FE = function () {
         command('FE');
         return self;
     };
@@ -285,9 +304,8 @@ function EPL(options) {
      * This command will cause the printer to print a list of all forms stored in memory
      *
      * @returns {EPL}
-     * @constructor
      */
-    self.FI = function () {
+    self.PrintFormInformation = self.FI = function () {
         command('FI');
         return self;
     };
@@ -313,9 +331,8 @@ function EPL(options) {
      *                       By including an “*” (wild card), ALL forms will be deleted from memory.
      *                       The FK”*” does not need to be issued twice to delete all forms.
      * @returns {EPL}
-     * @constructor
      */
-    self.FK = function (formName) {
+    self.DeleteForm = self.FK = function (formName) {
         command('FK', `"${formName}"`);
         return self;
     };
@@ -331,9 +348,8 @@ function EPL(options) {
      *                    forms when stored into the printer or when retrieved by
      *                    the user.
      * @returns {EPL}
-     * @constructor
      */
-    self.FR = function (formName) {
+    self.RetrieveForm = self.FR = function (formName) {
         command('FR', `"${formName}"`);
         return self;
     };
@@ -350,11 +366,11 @@ function EPL(options) {
      *    data within that form.
      *  • A form will not store if insufficient memory is available. See the M command for details
      *    on adjusting and configuring memory for forms, graphics and soft fonts.
+     *
      * @param formName
      * @returns {EPL}
-     * @constructor
      */
-    self.FS = function (formName) {
+    self.StoreForm = self.FS = function (formName) {
         command('FS', `"${formName}"`);
         return self;
     };
@@ -374,9 +390,8 @@ function EPL(options) {
      *                three different graphics when stored into the printer or
      *                when retrieved by the user.
      * @returns {EPL}
-     * @constructor
      */
-    self.GG = function (p1, p2, name) {
+    self.PrintGraphics = self.GG = function (p1, p2, name) {
         command('GG', p1, p2, name);
         return self;
     };
@@ -385,9 +400,8 @@ function EPL(options) {
      * This command will cause the printer to print a list of all graphics stored in memory.
      *
      * @returns {EPL}
-     * @constructor
      */
-    self.GI = function () {
+    self.PrintGraphicsInformation = self.GI = function () {
         command('GI');
         return self;
     };
@@ -412,9 +426,8 @@ function EPL(options) {
      *                      from memory. The GK”*” does not need to be issued twice to
      *                      delete all graphics.
      * @returns {EPL}
-     * @constructor
      */
-    self.GK = function (name) {
+    self.DeleteGraphics = self.GK = function (name) {
         command('GK', `"${name}"`);
         return self;
     };
@@ -437,9 +450,8 @@ function EPL(options) {
      *                is printed which will reduce flash memory life
      * @param p1 Use the DOS DIR command to determine the exact file size.
      * @returns {EPL}
-     * @constructor
      */
-    self.GM = function (name, p1) {
+    self.StoreGraphics = self.GM = function (name, p1) {
         command('GM', `"${name}"`, p1);
         return self;
     };
@@ -462,9 +474,8 @@ function EPL(options) {
      *             printer automatically calculates the exact size of the data
      *             block based upon this formula.
      * @returns {EPL}
-     * @constructor
      */
-    self.GW = function (p1, p2, p3, p4, data) {
+    self.DirectGraphicWrite = self.GW = function (p1, p2, p3, p4, data) {
         command('GW', p1, p2, p3, p4, data);
         return self;
     };
@@ -474,27 +485,26 @@ function EPL(options) {
      * 8 and 9, only. The inter-character spacing gets multiplied with the text string by the selected
      * font’s horizontal and vertical multiplier values.
      *
-     * @param p1 Space in dots between Asian characters
+     * @param space Space in dots between Asian characters
      *           Accepted Values: 0-9 (dots)
      *           Default Value: 0 (dots or no space)
      * @returns {EPL}
      */
-    self.i = function (p1) {
-        command('i', p1);
+    self.AsianCharacterSpacing = self.i = function (space) {
+        command('i', space);
         return self;
     };
 
     /**
      * Use this command to select the appropriate character set for printing (and KDU display).
      *
-     * @param p1 Number of data bits
-     * @param p2 Printer Codepage/Language Support
-     * @param p3 KDU Countyr Code
+     * @param number Number of data bits
+     * @param printer Printer Codepage/Language Support
+     * @param kduCode KDU Countyr Code
      * @returns {EPL}
-     * @constructor
      */
-    self.I = function (p1, p2, p3) {
-        command('I', p1, p2, p3);
+    self.CharacterSetSelection = self.I = function (number, printer, kduCode) {
+        command('I', number, printer, kduCode);
         return self;
     };
 
@@ -503,9 +513,8 @@ function EPL(options) {
      * multiple labels. At power up, Top Of Form Backup will be enabled.
      *
      * @returns {EPL}
-     * @constructor
      */
-    self.JB = function () {
+    self.DisableTopOfFormBackup = self.JB = function () {
         command('JB');
         return self;
     };
@@ -517,9 +526,8 @@ function EPL(options) {
      * models at this time.
      *
      * @returns {EPL}
-     * @constructor
      */
-    self.JC = function () {
+    self.DisableTopOfFormBackupAllCases = self.JC = function () {
         command('JC');
         return self;
     };
@@ -530,9 +538,8 @@ function EPL(options) {
      * the last label backs up the Top Of Form before printing the next label.
      *
      * @returns {EPL}
-     * @constructor
      */
-    self.JF = function () {
+    self.EnableTopOfFormBackup = self.JF = function () {
         command('JF');
         return self;
     };
@@ -544,15 +551,14 @@ function EPL(options) {
      * reversed to white and all white will be reversed to black within the line’s area (width and
      * length).
      *
-     * @param p1 Horizontal start position (X) in dots
-     * @param p2 Vertical start position (Y) in dots.
-     * @param p3 Horizontal length in dots.
-     * @param p4 Vertical length in dots.
+     * @param x Horizontal start position (X) in dots
+     * @param y Vertical start position (Y) in dots.
+     * @param horizontalLength Horizontal length in dots.
+     * @param verticalLength Vertical length in dots.
      * @returns {EPL}
-     * @constructor
      */
-    self.JE = function (p1, p2, p3, p4) {
-        command('JE', p1, p2, p3, p4);
+    self.LineDrawExclusiveOR = self.JE = function (x, y, horizontalLength, verticalLength) {
+        command('JE', x, y, horizontalLength, verticalLength);
         return self;
     };
 
@@ -564,7 +570,6 @@ function EPL(options) {
      * @param horizontalLength Horizontal length in dots.
      * @param verticalLength Vertical length in dots.
      * @returns {EPL}
-     * @constructor
      */
     self.LineDrawBlack = self.LO = function (x, y, horizontalLength, verticalLength) {
         command('LO', x, y, horizontalLength, verticalLength);
@@ -574,31 +579,29 @@ function EPL(options) {
     /**
      * Use this command to draw diagonal black lines, overwriting previous information.
      *
-     * @param p1 Horizontal start position (X) in dots.
-     * @param p2 Vertical start position (Y) in dots.
-     * @param p3 Horizontal length in dots.
-     * @param p4 Vertical length in dots.
-     * @param p5 Vertical end position (Y) in dots.
+     * @param x Horizontal start position (X) in dots.
+     * @param y Vertical start position (Y) in dots.
+     * @param horizontalLength Horizontal length in dots.
+     * @param verticalLength Vertical length in dots.
+     * @param verticalEndPosition Vertical end position (Y) in dots.
      * @returns {EPL}
-     * @constructor
      */
-    self.LS = function (p1, p2, p3, p4, p5) {
-        command('LS', p1, p2, p3, p4, p5);
+    self.LineDrawDiagonal = self.LS = function (x, y, horizontalLength, verticalLength, verticalEndPosition) {
+        command('LS', x, y, horizontalLength, verticalLength, verticalEndPosition);
         return self;
     };
 
     /**
      * Use this command to draw white lines, effectively erasing previous information.
      *
-     * @param p1 Horizontal start position (X) in dots.
-     * @param p2 Vertical start position (Y) in dots.
-     * @param p3 Horizontal length in dots.
-     * @param p4 Vertical length in dots.
+     * @param x Horizontal start position (X) in dots.
+     * @param y Vertical start position (Y) in dots.
+     * @param horizontalLength Horizontal length in dots.
+     * @param verticalLength Vertical length in dots.
      * @returns {EPL}
-     * @constructor
      */
-    self.LW = function (p1, p2, p3, p4) {
-        command('LS', p1, p2, p3, p4);
+    self.LineDrawWhite = self.LW = function (x, y, horizontalLength, verticalLength) {
+        command('LS', x, y, horizontalLength, verticalLength);
         return self;
     };
 
@@ -615,9 +618,8 @@ function EPL(options) {
      * @param p3 Parameter ignored, but required to process. Graphics (and soft
      *           font) memory size in whole Kbytes.
      * @returns {EPL}
-     * @constructor
      */
-    self.M = function (p1, p2, p3) {
+    self.MemoryAllocation = self.M = function (p1, p2, p3) {
         command('M', p1, p2, p3);
         return self;
     };
@@ -626,7 +628,6 @@ function EPL(options) {
      * This command clears the image buffer prior to building a new label image.
      *
      * @returns {EPL}
-     * @constructor
      */
     self.ClearImageBuffer = self.N = function () {
         command('N');
@@ -637,9 +638,8 @@ function EPL(options) {
      * This command allows the user to cancel most printer customization parameters
      * set by o series commands.
      * @returns {EPL}
-     * @constructor
      */
-    self.O = function () {
+    self.CancelSoftwareOptions = self.O = function () {
         command('O');
         return self;
     };
@@ -650,7 +650,7 @@ function EPL(options) {
      *
      * @returns {EPL}
      */
-    self.oB = function () {
+    self.CancelAutoBarCodeOptimization = self.oB = function () {
         command('oB');
         return self;
     };
@@ -677,7 +677,7 @@ function EPL(options) {
      *           Total character area is 12 x 22 dots
      * @returns {EPL}
      */
-    self.oE = function (p1, p2, p3, p4, p5) {
+    self.LineModeFontSubstitution = self.oE = function (p1, p2, p3, p4, p5) {
         command('oE', p1, p2, p3, p4, p5);
         return self;
     };
@@ -694,7 +694,7 @@ function EPL(options) {
      *           code symbol.
      * @returns {EPL}
      */
-    self.oH = function (p1, p2) {
+    self.MacroPDFOffset = self.oH = function (p1, p2) {
         command('oH', p1, p2);
         return self;
     };
@@ -713,7 +713,7 @@ function EPL(options) {
      *
      * @returns {EPL}
      */
-    self.oM = function () {
+    self.DisableInitialEscSequenceFeed = self.oM = function () {
         command('oM');
         return self;
     };
@@ -769,15 +769,28 @@ function EPL(options) {
      * @param p5
      * @returns {EPL}
      */
-    self.oW = function (p1, p2, p3, p4, p5) {
+    self.CustomizeBarCodeParameters = self.oW = function (p1, p2, p3, p4, p5) {
         command('oW', p1, p2, p3, p4, p5);
         return self;
     };
 
-    // self.o = function () {
-    //     command('o');
-    //     return self;
-    // };
+    /**
+     * Use this command to select various printer options. Options available vary by
+     * printer configuration.
+     *
+     * Options selected and enabled in a printer can be verified by checking the printer configuration
+     * printout, Dump Mode printer status label. See the U command on page 146 and the
+     * Explanation of the Status Printout on page 34.
+     *
+     * Mobile printers, such as the TR 220, ignore this command.
+     *
+     * @param args
+     * @returns {EPL}
+     */
+    self.HardwareOptions = self.o = function (...args) {
+        command('o', ...args);
+        return self;
+    };
 
     /**
      * This command is used to switch the printer operating mode from Page Mode
@@ -789,9 +802,8 @@ function EPL(options) {
      * Mobile printers, such as the TR 220, ignore this command.
      *
      * @returns {EPL}
-     * @constructor
      */
-    self.OEPL1 = function () {
+    self.SetLineMode = self.OEPL1 = function () {
         command('OEPL1');
         return self;
     };
@@ -808,7 +820,6 @@ function EPL(options) {
      *           Number of copies of each label (used in combination with
      *           counters to print multiple copies of the same label).
      * @returns {EPL}
-     * @constructor
      */
     self.Print = self.P = function (numberOfLabel, numberOfCopies) {
         command('P', numberOfLabel, numberOfCopies);
@@ -830,12 +841,23 @@ function EPL(options) {
      *           value is only set when using counters.
      *
      * @returns {EPL}
-     * @constructor
      */
-    self.PA = function (p1, p2) {
+    self.PrintAutomatic = self.PA = function (p1, p2) {
         command('PA', p1, p2);
         return self;
     };
+
+    /**
+     * Use this command to set the width of the printable area of the media.
+     *
+     * @param width The q command will cause the image buffer to reformat and
+     *              position to match the selected label width (p1)
+     * @returns {EPL}
+     */
+    self.SetLabelWidth = self.q = function (width) {
+        commanf('q', width);
+        return self;
+    }
 
     self.autoFRKill = function () {
         self.FK('AUTOFR');
