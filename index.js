@@ -1,5 +1,10 @@
 const writeFileQueue = require('write-file-queue');
 const writeQueue = {};
+const A = require('./commands/A');
+const B = require('./commands/B');
+const b = require('./commands/b2D');
+const C = require('./commands/C');
+const D = require('./commands/D');
 
 function EPL(options) {
     const self = this;
@@ -40,134 +45,11 @@ function EPL(options) {
         self.output += `${cmd}${params}\n`
     };
 
-    /**
-     * Renders an ASCII text string to the image print buffer. See Text(Fonts)
-     * on page 26 for discussion om text handling in Page Mode programming.
-     *
-     * Asian language EPL2 Page Mode printers have special firmware and printer (PCBA) memory
-     * order options to support the large Asian character (ideogram) sets.
-     *
-     * The Latin (English etc.) font set (1-5, a-z and A-Z) are single-byte (8bits per byte) ASCII
-     * character maps. The Asian characters are double-byte mapped characters. The printed Asian
-     * character is dependent on the double-byte ASCII values.
-     *
-     * @param x Horizontal start position (X) in dots.
-     * @param y Vertical start position (Y) in dots.
-     * @param rotation
-     *           Characters are organized vertically from left to right and then rotated to print.
-     *
-     *           Accepted Values:
-     *           0 = normal (no rotation)
-     *           1 = 90 degrees
-     *           2 = 180 degrees
-     *           3 = 270 degrees
-     *
-     *           Rotation for Asian Printers Only
-     *           Characters are organized horizontally from top to bottom and
-     *           then rotated to print. Asian printers support both horizontal
-     *           and vertical character rotation.
-     *
-     *           Accepted Values (Asian Printers Only):
-     *           4 = normal (no rotation)
-     *           5 = 90 degrees
-     *           6 = 180 degrees
-     *           7 = 270 degrees
-     * @param font Font selection
-     * @param horizontalMultiplier Horizontal multiplier
-     * @param verticalMultiplier Vertical multiplier
-     * @param reverseImage Reverse image
-     * @param data Fixed data field
-     */
-    self.Text = self.A = function (x, y, rotation, font, horizontalMultiplier, verticalMultiplier, reverseImage, data) {
-        data = data || '';
-        data = data.replace("\\", "\\\\").replace("\"", "\\\"");
-        command('A', x, y, rotation, font, horizontalMultiplier, verticalMultiplier, reverseImage, `"${data}"`);
-        return self;
-    };
-
-    /**
-     * Use this command to print standard bar codes.
-     *
-     * - Bar Code
-     * - RSS-14 Bar Code
-     *
-     * @param x Horizontal start position
-     * @param y Vertical start position
-     * @param rotation Rotation
-     *           Accepted Values:
-     *           0 = normal (no rotation)
-     *           1 = 90 degrees
-     *           2 = 180 degrees
-     *           3 = 270 degrees
-     * @param barCode Bar Code selection
-     * @param narrowBar Narrow bar width
-     * @param wideBar Wide bar width
-     *           Accepted Values: 2 - 30
-     * @param barCodeHeight Bar code height
-     * @param printHumanReadableCode Print human readable code
-     *           Accepted Values:
-     *           B = yes
-     *           N = no
-     * @param data Fixed data field
-     * @returns {EPL}
-     */
-    self.BarCode = self.B = function (x, y, rotation, barCode, narrowBar, wideBar, barCodeHeight, printHumanReadableCode, data) {
-        command('B', x, y, rotation, barCode, narrowBar, wideBar, barCodeHeight, printHumanReadableCode, `"${data}"`);
-        return self;
-    };
-
-    /**
-     * Use this command to print standard bar codes.
-     *
-     * - Aztec
-     * - Aztec Mesa
-     * - Data Matrix
-     * - MaxiCode
-     * - PDF417
-     * - QR Code
-     *
-     * @param p1
-     * @param p2
-     * @param p3
-     * @param p4
-     * @param p5
-     * @param p6
-     * @param p7
-     * @param p8
-     * @param data
-     * @returns {EPL}
-     */
-    self.BarCode2D = self.b = function (p1, p2, p3, p4, p5, p6, p7, p8, data) {
-        command('b', p1, p2, p3, p4, p5, p6, p7, p8, data);
-        return self;
-    };
-
-    /**
-     *
-     * @param p1 Conter number
-     * @param p2 Maximum number of digits for counter
-     * @param p3 Field Justification
-     * @param p4 Steo Value
-     * @param prompt KDU Propt Options
-     * @returns {EPL}
-     */
-    self.Counter = self.C = function (p1, p2, p3, p4, prompt) {
-        command('C', p1, p2, p3, p4, prompt);
-        return self;
-    };
-
-    /**
-     * Use this command to select the print density. this density command controls
-     * the amount of heat produced by the print head, More heat will produce a darker image. Too
-     * much heat can cause the printed image to distort.
-     *
-     * @param density setting Accepted Value 0 - 15
-     * @returns {EPL}
-     */
-    self.Density = self.D = function (density) {
-        command('D', density);
-        return self;
-    };
+    self.Text       = self.A = A.bind(self);
+    self.BarCode    = self.B = B.bind(self);
+    self.BarCode2D  = self.b = b.bind(self);
+    self.Counter    = self.C = C.bind(self);
+    self.Density    = self.D = D.bind(self);
 
     /**
      * This command allows the advanced programmer to force a user diagnostic
@@ -204,7 +86,7 @@ function EPL(options) {
      * @param fontname
      * @returns {EPL}
      */
-    soft.DeleteSoftFont = self.EK = function (fontname = '*') {
+    self.DeleteSoftFont = self.EK = function (fontname = '*') {
         command('EK', `"${fontname}"`);
         return self;
     };
