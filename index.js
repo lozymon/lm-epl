@@ -1039,6 +1039,20 @@ function EPL(options) {
         return self;
     }
 
+    /**
+     * Use this command to select the print orientation
+     *
+     * @param orientation Accepted Values:
+     *                    T = Printing from top of image buffer.
+     *                    B = Printing from bottom of image buffer.
+     *                    Default Value: T
+     * @returns {EPL}
+     */
+    self.PrintDirection = self.Z = function (orientation) {
+        command('Z', orientation);
+        return self;
+    };
+
     self.autoFRKill = function () {
         self.FK('AUTOFR');
         return self;
