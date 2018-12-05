@@ -32,7 +32,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.sendToPrinter = function (callback) {
-        const {device, samba, samba_user, samba_password} = self.options;
+        const {device, samba, samba_user, samba_password, debug} = self.options;
         if (device && String(device).length > 0) {
             writeQueue[device] = writeQueue[device] || writeFileQueue({retries: 300000});
             writeQueue[device](device, self.output, callback);
