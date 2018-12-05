@@ -13,6 +13,7 @@ function EPL(options) {
 
     self.options = {
         device: '',
+        debug:false,
         samba: '',
         samba_user: '',
         samba_password: ''
@@ -37,8 +38,20 @@ function EPL(options) {
             writeQueue[device](device, self.output, callback);
         } else if (samba && String(samba).length > 0) {
             const command = `echo -en "${self.output}" | smbclient "${samba}" "${samba_password}" -U "${samba_user}" -c "print -"`;
+
+            if (debug) {
+                console.log('samba command --> ', command);
+            }
+
             const sh = spawn(command);
-            sh.on('close', callback)
+
+            sh.on('close', function(...args) {
+                if (debug) {
+                    console.log('samba close --> ', ...args);
+                }
+
+                callback(...args)
+            })
         }
 
         return self;
