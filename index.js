@@ -1,3 +1,4 @@
+const {spawn} = require('child_process');
 const writeFileQueue = require('write-file-queue');
 const writeQueue = {};
 const A = require('./commands/A');
@@ -12,6 +13,9 @@ function EPL(options) {
 
     self.options = {
         device: '',
+        samba: '',
+        samba_user: '',
+        samba_password: ''
     };
 
     for (let key in (options || {})) {
@@ -27,9 +31,16 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.sendToPrinter = function (callback) {
-        const device = self.options.device;
-        writeQueue[device] = writeQueue[device] || writeFileQueue({retries: 300000});
-        writeQueue[device](device, self.output, callback);
+        const {device, samba, samba_user, samba_password} = self.options;
+        if (device && String(device).length > 0) {
+            writeQueue[device] = writeQueue[device] || writeFileQueue({retries: 300000});
+            writeQueue[device](device, self.output, callback);
+        } else if (samba && String(samba).length > 0) {
+            const command = `echo -en "${self.output}" | smbclient "${samba}" "${samba_password}" -U "${samba_user}" -c "print -"`;
+            const sh = spawn(command);
+            sh.on('close', callback)
+        }
+
         return self;
     };
 
@@ -45,11 +56,11 @@ function EPL(options) {
         self.output += `${cmd}${params}\n`
     };
 
-    self.Text       = self.A = A.bind(self);
-    self.BarCode    = self.B = B.bind(self);
-    self.BarCode2D  = self.b = b.bind(self);
-    self.Counter    = self.C = C.bind(self);
-    self.Density    = self.D = D.bind(self);
+    self.Text = self.A = A.bind(self);
+    self.BarCode = self.B = B.bind(self);
+    self.BarCode2D = self.b = b.bind(self);
+    self.Counter = self.C = C.bind(self);
+    self.Density = self.D = D.bind(self);
 
     /**
      * This command allows the advanced programmer to force a user diagnostic
