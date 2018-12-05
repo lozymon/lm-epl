@@ -1,5 +1,5 @@
 const EPL = require('./index');
-const epl = new EPL({device: '\\\\10.7.155.99\\gc420'});
+const epl = new EPL({debug: true, samba_temp: process.cwd(), samba: '\\\\10.7.155.99\\gc420'});
 
 const data = [
     {
@@ -42,7 +42,7 @@ for (let i = 0; i < data.length; i++) {
         .Text(790, 155, 2, 3, 1, 2, 'N', `TRANSP.: ${item.TRANSPORTADORA}`)
         .Text(790, 105, 2, 3, 1, 2, 'N', `Nº NF: ${item.NUMERO_NOTA}`)
         .Text(790, 55, 2, 3, 1, 2, 'N', `VOLUME: ${item.s}/${item.VOLUME}`)
-        .BarCode(300,125,2,1,3,7,75,'B',item.CODIGO)
+        .BarCode(300, 125, 2, 1, 3, 7, 75, 'B', item.CODIGO)
         .Print(1)
         .sendToPrinter(function (...args) {
             console.log(args);
@@ -50,8 +50,6 @@ for (let i = 0; i < data.length; i++) {
 }
 
 console.log(epl.getOutput());
-
-
 
 
 // const func = new Function('data', 'epl', code);

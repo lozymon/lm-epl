@@ -1,4 +1,5 @@
 const {spawn} = require('child_process');
+const fs = require('fs');
 const writeFileQueue = require('write-file-queue');
 const writeQueue = {};
 const A = require('./commands/A');
@@ -13,8 +14,9 @@ function EPL(options) {
 
     self.options = {
         device: '',
-        debug:false,
+        debug: false,
         samba: '',
+        samba_temp: '',
         samba_user: '',
         samba_password: ''
     };
@@ -32,26 +34,49 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.sendToPrinter = function (callback) {
-        const {device, samba, samba_user, samba_password, debug} = self.options;
+        const {device, samba, samba_user, samba_password, samba_temp, debug} = self.options;
         if (device && String(device).length > 0) {
             writeQueue[device] = writeQueue[device] || writeFileQueue({retries: 300000});
             writeQueue[device](device, self.output, callback);
         } else if (samba && String(samba).length > 0) {
-            const command = `echo -en "${self.output}" | smbclient "${samba}" "${samba_password}" -U "${samba_user}" -c "print -"`;
+            if (samba_temp && String(samba_temp).length > 0) {
+                const tmp = `${samba_temp}/${Math.random().toString(36).substr(2, 32)}.epl`;
 
-            if (debug) {
-                console.log('samba command --> ', command);
-            }
-
-            const sh = spawn(command);
-
-            sh.on('close', function(...args) {
                 if (debug) {
-                    console.log('samba close --> ', ...args);
+                    console.log('samba_temp --> ', tmp);
                 }
 
-                callback(...args)
-            })
+                writeQueue[tmp] = writeQueue[tmp] || writeFileQueue({retries: 300000});
+                writeQueue[tmp](tmp, self.output, () => {
+
+                    const sambash = `${__dirname}/samba.sh`;
+                    if (debug) {
+                        console.log('samba command --> ', [sambash, samba, samba_password, samba_user, tmp]);
+                    }
+
+                    const sh = spawn('sh', [sambash, samba, samba_password, samba_user, tmp]);
+
+                    sh.stdout.on('data', (data) => {
+                        if (debug) {
+                            console.log(`stdout: ${data}`);
+                        }
+                    });
+
+                    sh.stderr.on('data', (data) => {
+                        if (debug) {
+                            console.log(`stderr: ${data}`);
+                        }
+                    });
+
+                    sh.on('close', function (...args) {
+                        if (debug) {
+                            console.log('samba close --> ', ...args);
+                        }
+
+                        callback(...args)
+                    })
+                });
+            }
         }
 
         return self;
