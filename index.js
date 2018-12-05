@@ -786,7 +786,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.SetLabelWidth = self.q = function (width) {
-        commanf('q', width);
+        command('q', width);
         return self;
     }
 
@@ -824,7 +824,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.SetFormLength = self.Q = function (lableLength, gapLength, offsetLength) {
-        commanf('Q', lableLength, gapLength, offsetLength);
+        command('Q', lableLength, gapLength, offsetLength);
         return self;
     }
 
@@ -843,7 +843,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.SetDoubleBufferMode = self.r = function (mode) {
-        commanf('r', mode);
+        command('r', mode);
         return self;
     }
 
@@ -866,7 +866,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.SetReferencePoint = self.R = function (horizontalLeftMargin, verticalTopMargin) {
-        commanf('R', horizontalLeftMargin, verticalTopMargin);
+        command('R', horizontalLeftMargin, verticalTopMargin);
         return self;
     }
 
@@ -880,7 +880,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.SpeedSelect = self.S = function (speed) {
-        commanf('S', speed);
+        command('S', speed);
         return self;
     }
 
@@ -899,7 +899,7 @@ function EPL(options) {
      * @param p3
      */
     self.DateRecallFormatLayout = self.TD = function (p1, p2, p3) {
-        commanf('TD', p1, p2, p3);
+        command('TD', p1, p2, p3);
         return self;
     }
 
@@ -920,7 +920,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.SetRealTimeClock = self.TS = function (month, day, year, hour, minutes, seconds) {
-        commanf('TS', month, day, year, hour, minutes, seconds);
+        command('TS', month, day, year, hour, minutes, seconds);
         return self;
     }
 
@@ -937,7 +937,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.TimeRecallFormatLayout = self.TT = function (hour, minutes, seconds) {
-        commanf('TT', hour, minutes, seconds);
+        command('TT', hour, minutes, seconds);
         return self;
     }
 
@@ -950,7 +950,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.PrintConfigurationGeneral = self.U = function () {
-        commanf('U');
+        command('U');
         return self;
     }
 
@@ -967,7 +967,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.EnableClearLabelCounterMode = self.UA = function () {
-        commanf('UA');
+        command('UA');
         return self;
     }
 
@@ -980,7 +980,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.ResetLabelCounterMode = self.UB = function () {
-        commanf('UB');
+        command('UB');
         return self;
     }
 
@@ -993,7 +993,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.ExternalFontInformationInquiry = self.UE = function () {
-        commanf('UE');
+        command('UE');
         return self;
     }
 
@@ -1004,7 +1004,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.ExternalFontInformationInquiry = self.UF = function () {
-        commanf('UF');
+        command('UF');
         return self;
     }
 
@@ -1015,7 +1015,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.GraphicsInformationInquiry = self.UG = function () {
-        commanf('UG');
+        command('UG');
         return self;
     }
 
@@ -1035,7 +1035,7 @@ function EPL(options) {
      * @returns {EPL}
      */
     self.HostPromptsCodepageInquiry = self.UI = function (numberOfDataBits, codePage, countryCode) {
-        commanf('UI', numberOfDataBits, codePage, countryCode);
+        command('UI', numberOfDataBits, codePage, countryCode);
         return self;
     }
 
