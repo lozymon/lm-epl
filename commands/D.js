@@ -12,7 +12,7 @@ module.exports = function (density) {
     const output = command('D', density);
 
     if (this.output) {
-        this.output += output
+        this.output += output;
         return this;
     }
 

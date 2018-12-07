@@ -7,6 +7,10 @@ const B = require('./commands/B');
 const b = require('./commands/b2D');
 const C = require('./commands/C');
 const D = require('./commands/D');
+const Dump = require('./commands/Dump');
+const EI = require('./commands/EI');
+const EK = require('./commands/EK');
+const eR = require('./commands/eR');
 
 function EPL(options) {
     const self = this;
@@ -99,59 +103,10 @@ function EPL(options) {
     self.BarCode2D = self.b = b.bind(self);
     self.Counter = self.C = C.bind(self);
     self.Density = self.D = D.bind(self);
-
-    /**
-     * This command allows the advanced programmer to force a user diagnostic
-     * "data dump" mode. Sending the dump command to the printer allows the programmer to
-     * compare actual data sent to printer with the host program.
-     *
-     * Send data to the printer after the dump command has been issued to evaluate program and
-     * printer control data. The printer will process all data bytes into ASCII character data,
-     * range 0-155 decimal (00-FF hexadecimal)
-     *
-     * Press the printer's Feed button until "Out of Dump" is printed to power cycle the printer to
-     * terminate the dump mode.
-     *
-     * @returns {EPL}
-     */
-    self.Dump = function () {
-        command('dump');
-        return self;
-    };
-
-    /**
-     * This command will cause the printer to print a list of all soft fonts that are stored in memory
-     *
-     * @returns {EPL}
-     */
-    self.PrintSoftFontInformation = self.EI = function () {
-        command('EI');
-        return self;
-    };
-
-    /**
-     * This command is used to delete soft fonts from memory
-     *
-     * @param fontname
-     * @returns {EPL}
-     */
-    self.DeleteSoftFont = self.EK = function (fontname = '*') {
-        command('EK', `"${fontname}"`);
-        return self;
-    };
-
-    /**
-     * This command allows the advanced programmer to specify the printer's
-     * error/status report character for error reporting via the RS-232 serial interface
-     *
-     * @param character Any single ASCII character Accepted Values: 0255 decimal (00-FF hexadecimal)
-     * @param error Error/Status Response Mode
-     * @returns {EPL}
-     */
-    self.UserDefinedError = self.eR = function (character, error) {
-        command('eR', character, error);
-        return self;
-    };
+    self.Dump = Dump.bind(self);
+    self.PrintSoftFontInformation = self.EI = EI.bind(self);
+    self.DeleteSoftFont = self.EK = EK.bind(self);
+    self.UserDefinedError = self.eR = eR.bind(self);
 
     /**
      * This command is used to download and store soft fonts in memory.
