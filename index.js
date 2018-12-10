@@ -11,6 +11,18 @@ const Dump = require('./commands/Dump');
 const EI = require('./commands/EI');
 const EK = require('./commands/EK');
 const eR = require('./commands/eR');
+const ES = require('./commands/ES');
+const f = require('./commands/f');
+const fB = require('./commands/fB');
+const FE = require('./commands/FE');
+const FK = require('./commands/FK');
+const FR = require('./commands/FR');
+const FS = require('./commands/FS');
+const GG = require('./commands/GG');
+const GI = require('./commands/GI');
+const GK = require('./commands/GK');
+const GM = require('./commands/GM');
+const GW = require('./commands/GW');
 
 function EPL(options) {
     const self = this;
@@ -107,264 +119,19 @@ function EPL(options) {
     self.PrintSoftFontInformation = self.EI = EI.bind(self);
     self.DeleteSoftFont = self.EK = EK.bind(self);
     self.UserDefinedError = self.eR = eR.bind(self);
-
-    /**
-     * This command is used to download and store soft fonts in memory.
-     *
-     * @param fontname One lette
-     *                 Accepted Values: a–z, lower case
-     *                 Lower Case named fonts minimize soft font memory usage to
-     *                 only store fonts downloaded and have 256 character limit.
-     * @param numberOfCharacters Accepted Values: 00–FF hex (0–255 decimal) for 1 to 256
-     *                           fonts per soft font set.
-     * @param rotation Accepted Values:
-     *                 00 hex = 0 and 180 degrees
-     *                 01 hex = 90 and 270 degrees
-     *                 02 hex = Both 0 and 180 degree rotation pair and the
-     *                 90 and 270 degree rotation pair
-     * @param fontHeight Accepted Values: 00–FF hex
-     *                   Measured in dots and expressed as a hexadecimal number, i.e.
-     *                   1B hex. = 27 dots.
-     *                   Font height includes accentors and dissenters of characters
-     *                   and need to fit in the character cell.
-     *                    • 203 dpi printers = 256 dots = 1.26 in. = 32.03 mm
-     *                    • 300 dpi printers = 00–FF hex.
-     *                      256 dots = 0.85 in. = 21.67 mm
-     * @param args
-     * @returns {EPL}
-     */
-    self.StoreSoftFont = self.ES = function (fontname, numberOfCharacters, rotation, fontHeight, ...args) {
-        command('ES', numberOfCharacters, rotation, FontHeight, ...args);
-        return self;
-    };
-
-    /**
-     * Use this command on an individual printer to provide precision cut placement to:
-     *  - Compensate for small sensor to cutter position differences on a printer by printer basis
-     *  - Fine-tune the cut position to compensate for differences in media.
-     *
-     *  Mobile printers, such as the TR 220, ignore this command.
-     *
-     *  When using the label liner cutter option, the printer will advance each printed label to the
-     *  appropriate programmed offset cut position, between labels, before cutting. Due to media
-     *  differences, the printer may not accurately position the labels before cutting, causing the cutter
-     *  to cut the label instead of the liner.
-     *
-     * @param cutPositionIndex Cut position index measured in dots.
-     *                         Accepted Values: 070 to 130
-     *                         Accepted Values: 100.
-     * @returns {EPL}
-     */
-    self.CutPosition = self.f = function (cutPositionIndex) {
-        command('f', cutPositionIndex);
-        return self;
-    };
-
-    /**
-     * Use this command to provide precision tear, peel and cut placement to fine tune
-     * the media positioning to compensate for differences in media and handling requirements.
-     *
-     * Mobile printers, such as the TR 220, ignore this command.
-     *
-     * @param mediaPositionOffset Media position offset measured in dots.
-     *                            Accepted Values: 0–255
-     *                            Default Value: 0
-     * @returns {EPL}
-     */
-    self.AdjustBackupPosition = self.fB = function (mediaPositionOffset) {
-        command('fB', mediaPositionOffset);
-        return self;
-    };
-
-    /**
-     * This command is used to end a form store sequence.
-     *
-     * @returns {EPL}
-     */
-    self.EndFormStore = self.FE = function () {
-        command('FE');
-        return self;
-    };
-
-    /**
-     * This command will cause the printer to print a list of all forms stored in memory
-     *
-     * @returns {EPL}
-     */
-    self.PrintFormInformation = self.FI = function () {
-        command('FI');
-        return self;
-    };
-
-    /**
-     * This command is used to delete forms from memory
-     *
-     * @param formName By entering the name of a form, that form will be deleted
-     *                 from memory.
-     *                   • The namemay be up to 8 characters long.
-     *                   • Form names stored by the printer are case sensitive and
-     *                     will be stored exactly as entered on the FS command line;
-     *                     i.e. “FORM1”, “form1” and “FoRm1” are three different
-     *                     forms when stored into the printer or when retrieved by
-     *                     the user.
-     *                   • Deleting a single form requires the FK”FORMNAME” be
-     *                     issued twice for each form to be deleted. Some label
-     *                     generation programs re-issue forms (form delete and
-     *                     store) every time a label is printed which reduces flash
-     *                     memory life.
-     *
-     *                 “*” = Wild card
-     *                       By including an “*” (wild card), ALL forms will be deleted from memory.
-     *                       The FK”*” does not need to be issued twice to delete all forms.
-     * @returns {EPL}
-     */
-    self.DeleteForm = self.FK = function (formName) {
-        command('FK', `"${formName}"`);
-        return self;
-    };
-
-    /**
-     * Use this command to retrieve a form that was previously stored in memory.
-     *
-     * @param formName This is the form name used when the form was stored.
-     *                  • The name may be up to 8 characters long.
-     *                  • Form names stored by the printer are case sensitive and
-     *                    will be stored exactly as entered on the FS command line;
-     *                    i.e. “FORM1”, “form1” and “FoRm1” are three different
-     *                    forms when stored into the printer or when retrieved by
-     *                    the user.
-     * @returns {EPL}
-     */
-    self.RetrieveForm = self.FR = function (formName) {
-        command('FR', `"${formName}"`);
-        return self;
-    };
-
-    /**
-     * This command begins a form store sequence.
-     *  • All commands following FS will be stored in form memory until the FE command is
-     *    received, ending the form store process.
-     *  • Delete a form prior to updating the form by using the FK command. If a form (with the
-     *    same name) is already stored in memory, issuing the FS command will result in an error
-     *    and the previously stored form is retained.
-     *  • To print a list of the forms currently stored in memory, use the FI command.
-     *  • Data stored within a form can not have the Null (0 dec. 00 hex.) character as part of any
-     *    data within that form.
-     *  • A form will not store if insufficient memory is available. See the M command for details
-     *    on adjusting and configuring memory for forms, graphics and soft fonts.
-     *
-     * @param formName
-     * @returns {EPL}
-     */
-    self.StoreForm = self.FS = function (formName) {
-        command('FS', `"${formName}"`);
-        return self;
-    };
-
-    /**
-     * Use this command to print a PCX (format) graphic that has been previously
-     * stored in printer memory.
-     *
-     * @param p1 Horizontal start position (X) in dots.
-     * @param p2 Vertical start position (Y) in dots.
-     * @param name This is the graphic name used when the graphic was stored.
-     *             This name can be supplied via variable data (V00 - V99).
-     *              • The name may be up to 8 characters long.
-     *              • Graphic names stored by the printer are case sensitive and
-     *                will be stored exactly as entered with the GM command
-     *                line; i.e. “GRAPHIC1”, “graphic1” and “graPHic1” are
-     *                three different graphics when stored into the printer or
-     *                when retrieved by the user.
-     * @returns {EPL}
-     */
-    self.PrintGraphics = self.GG = function (p1, p2, name) {
-        command('GG', p1, p2, name);
-        return self;
-    };
-
-    /**
-     * This command will cause the printer to print a list of all graphics stored in memory.
-     *
-     * @returns {EPL}
-     */
-    self.PrintGraphicsInformation = self.GI = function () {
-        command('GI');
-        return self;
-    };
-
-    /**
-     * Use this command to delete graphics from memory.
-     *
-     * @param name By entering the name of a graphic, that graphic will be deleted
-     *             from memory.
-     *              • Graphic names stored by the printer are case sensitive and
-     *                will be stored exactly as entered with the GM command
-     *                line; i.e. “LOGO1”, “logo1” and “LoGo1” are three
-     *                different graphics when stored into the printer or when
-     *                retrieved by the user.
-     *              • Deleting a single graphic requires that the
-     *                GK”FORMNAME” command string be issued twice for
-     *                each form deleted. Some label generation programs reissue
-     *                graphics (graphic delete and store) every time a label
-     *                is printed which will reduce flash memory life.
-     *
-     *                “*” = Wild card By including an “*” (wild card), ALL graphics will be deleted
-     *                      from memory. The GK”*” does not need to be issued twice to
-     *                      delete all graphics.
-     * @returns {EPL}
-     */
-    self.DeleteGraphics = self.GK = function (name) {
-        command('GK', `"${name}"`);
-        return self;
-    };
-
-    /**
-     * Use this command to store PCX graphics files in memory.
-     *
-     * @param name Graphic name This is the grahpic name that will be used when retrieving the
-     *             stored graphic.
-     *              • The name may be up to 8 characters long.
-     *              • Graphic names stored by the printer are case sensitive and
-     *                will be stored exactly as entered with the GM command
-     *                line; i.e. “LOGO1”, “logo1” and “LoGo1” are three
-     *                different graphics when stored into the printer or when
-     *                retrieved by the user.
-     *              • Deleting a single graphic requires that the
-     *                GK”FORMNAME” command string be issued twice for
-     *                each form deleted. Some label generation programs reissue
-     *                graphics (graphic delete and store) every time a label
-     *                is printed which will reduce flash memory life
-     * @param p1 Use the DOS DIR command to determine the exact file size.
-     * @returns {EPL}
-     */
-    self.StoreGraphics = self.GM = function (name, p1) {
-        command('GM', `"${name}"`, p1);
-        return self;
-    };
-
-    /**
-     * Use this command to load binary graphic data directly into the Image Buffer
-     * memory for immediate printing. Theprinter does not store graphic data sent directly to the
-     * image buffer.
-     * The graphic data is lost when the image has finished printing, power is removed or the printer
-     * is reset. Commands that size (Q and q) or clear (N and M) the image buffer will also remove
-     * graphic image data.
-     *
-     * @param p1 Horizontal start position (X) in dots.
-     * @param p2 Vertical start position (Y) in dots.
-     * @param p3 Width of graphic in bytes. Eight (8) dots = one (1) byte of data.
-     * @param p4 Length of graphic in dots (or print lines)
-     * @param data Raw binary data without graphic file formatting. Data must
-     *             be in bytes. Multiply the width in bytes (p3) by the number of
-     *             print lines (p4) for the total amount of graphic data. The
-     *             printer automatically calculates the exact size of the data
-     *             block based upon this formula.
-     * @returns {EPL}
-     */
-    self.DirectGraphicWrite = self.GW = function (p1, p2, p3, p4, data) {
-        command('GW', p1, p2, p3, p4, data);
-        return self;
-    };
+    self.StoreSoftFont = self.ES = ES.bind(self);
+    self.CutPosition = self.f = f.bind(self);
+    self.AdjustBackupPosition = self.fB = fB.bind(self);
+    self.EndFormStore = self.FE = FE.bind(self);
+    self.PrintFormInformation = self.FI = FI.bind(self);
+    self.DeleteForm = self.FK = FK.bind(self);
+    self.RetrieveForm = self.FR = FR.bind(self);
+    self.StoreForm = self.FS = FS.bind(self);
+    self.PrintGraphics = self.GG = GG.bind(self);
+    self.PrintGraphicsInformation = self.GI = GI.bind(self);
+    self.DeleteGraphics = self.GK = GK.bind(self);
+    self.StoreGraphics = self.GM = GM.bind(self);
+    self.DirectGraphicWrite = self.GW = GW.bind(self);
 
     /**
      * Places an adjustable inter-character space between Asian font characters, fonts
